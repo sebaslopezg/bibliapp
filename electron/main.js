@@ -6,6 +6,10 @@ import chokidar from "chokidar";
 import { initDatabase } from "./database/init.js";
 import { registerAllHandlers } from "./ipc/index.js";
 
+//test
+//import { mergeBibleFiles, getAllTextFiles } from "./converter.js";
+import {search, displayResult, loadBible} from "./utils/searcher.js"
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -50,7 +54,7 @@ async function createMainWindow() {
 }
 
 // Other IPCs
-ipcMain.handle("ping", () => "pong from main 🚀");
+ipcMain.handle("ping", () => "pong from main");
 
 ipcMain.on("custom-event", (event, data) => {
   console.log("Renderer says:", data);
@@ -67,7 +71,7 @@ app.whenReady().then(async () => {
       path.join(__dirname, "../electron/**/*.js"),
     ]);
     watcher.on("change", () => {
-      console.log("🔁 Restarting Electron due to main process change...");
+      console.log("Restarting Electron due to main process change...");
       app.relaunch();
       app.exit(0);
     });
@@ -92,3 +96,25 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
 });
+
+
+//const inputDir = 'C:/Users/usuario/Documents/bible_files';        // Directory containing .txt files
+//const outputFile = 'C:/Users/usuario/Documents/bible_files/bible.json';       // Output JSON file path
+//const bibleVersion = "Nueva Reina Valera 2000";
+//console.log('Files found:', getAllTextFiles('C:/Users/usuario/Documents/bible_files'));
+//mergeBibleFiles(inputDir, outputFile, bibleVersion);
+const biblePath = 'C:/Users/usuario/Documents/bible_files/bible.json';
+const bible = loadBible(biblePath);
+
+if (bible) {
+  // Examples
+  console.log('=== SINGLE VERSE SEARCHES ===');
+  displayResult(search(bible, 'genesis 1:1'));
+  displayResult(search(bible, 'GEneSis        1   :   2'));
+  displayResult(search(bible, '1 corintios 1:1'));
+  displayResult(search(bible, '1 CORINTIOS 13:4'));
+
+  console.log('\n=== RANGE SEARCHES ===');
+  displayResult(search(bible, 'genesis 1:1-3'));
+  displayResult(search(bible, 'salmos 23:1-6'));
+}

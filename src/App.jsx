@@ -6,12 +6,12 @@ function App() {
 
     <div id="controlls">
         <input type="text" autocomplete="off" id="cuadro_busqueda" />
-        <input type="button" id="buscar" />
+        <input type="button" id="buscar" value="Buscar" />
         <input id="rango" type="range" min="16" max="90" />
         <u id="sugerencias"></u>
     </div>
 
-    <div class="rule"></div>
+    <div className="rule"></div>
     <p id="mostrar"></p>
 
   </>

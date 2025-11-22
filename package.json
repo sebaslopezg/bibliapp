@@ -19,7 +19,7 @@
   },
   "build": {
     "appId": "com.sebas.electronvite",
-    "productName": "ElectronViteReactApp",
+    "productName": "Bibliapp",
     "files": [
       "dist/**/*",
       "electron/**/*",

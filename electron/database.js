@@ -18,13 +18,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 db.serialize(() => {
   db.run(`
-    CREATE TABLE IF NOT EXISTS inventario (
+    CREATE TABLE IF NOT EXISTS data.db (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       ref_name TEXT,
-      sku TEXT,
-      status INTEGER,
-      date_created TEXT,
-      date_modify TEXT
     )
   `);
 });
