@@ -1,17 +1,17 @@
 import fs from 'fs'
 
 // Load the Bible JSON file
-function loadBible(filePath) {
+const loadBible = (filePath) => {
   try {
     const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
+    return JSON.parse(data)
   } catch (error) {
-    console.error('Error loading Bible file:', error.message);
-    return null;
+    console.error('Error loading Bible file:', error.message)
+    return null
   }
 }
 
-function searchVerse(bible, query) {
+const searchVerse = (bible, query) => {
   // Normalize the query: remove extra spaces and convert to lowercase
   const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');
   
@@ -27,13 +27,13 @@ function searchVerse(bible, query) {
     };
   }
 
-  const [, bookInput, chapterInput, verseInput] = match;
-  const chapter = parseInt(chapterInput);
-  const verse = parseInt(verseInput);
+  const [, bookInput, chapterInput, verseInput] = match
+  const chapter = parseInt(chapterInput)
+  const verse = parseInt(verseInput)
 
   // Find the book (case-insensitive, handle spaces and underscores)
-  const normalizeBookName = (name) => name.toLowerCase().replace(/[\s_]+/g, '_');
-  const normalizedInput = normalizeBookName(bookInput);
+  const normalizeBookName = (name) => name.toLowerCase().replace(/[\s_]+/g, '_')
+  const normalizedInput = normalizeBookName(bookInput)
   
   const bookName = Object.keys(bible.books).find(
     book => normalizeBookName(book) === normalizedInput
@@ -46,7 +46,7 @@ function searchVerse(bible, query) {
     };
   }
 
-  const book = bible.books[bookName];
+  const book = bible.books[bookName]
 
   // Check if chapter exists
   if (!book[chapter]) {
@@ -78,25 +78,25 @@ function searchVerse(bible, query) {
 
 function searchRange(bible, query) {
   // Parse range: "genesis 1:2-5" or "genesis 1:2 - 1:5" or "1 samuel 1:1-5"
-  const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');
+  const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ')
   
   // Match patterns like "genesis 1:2-5" or "1 samuel 1:2 - 1:5"
-  const rangeRegex = /^(.+?)\s+(\d+):(\d+)\s*-\s*(?:(\d+):)?(\d+)$/;
+  const rangeRegex = /^(.+?)\s+(\d+):(\d+)\s*-\s*(?:(\d+):)?(\d+)$/
   const match = normalized.match(rangeRegex);
   
   if (!match) {
-    return null; // Not a range query
+    return null // Not a range query
   }
 
-  const [, bookInput, chapterInput, verseStart, chapterEnd, verseEnd] = match;
-  const chapter = parseInt(chapterInput);
-  const startVerse = parseInt(verseStart);
+  const [, bookInput, chapterInput, verseStart, chapterEnd, verseEnd] = match
+  const chapter = parseInt(chapterInput)
+  const startVerse = parseInt(verseStart)
   const endChapter = chapterEnd ? parseInt(chapterEnd) : chapter;
-  const endVerse = parseInt(verseEnd);
+  const endVerse = parseInt(verseEnd)
 
   // Find the book
-  const normalizeBookName = (name) => name.toLowerCase().replace(/[\s_]+/g, '_');
-  const normalizedInput = normalizeBookName(bookInput);
+  const normalizeBookName = (name) => name.toLowerCase().replace(/[\s_]+/g, '_')
+  const normalizedInput = normalizeBookName(bookInput)
   
   const bookName = Object.keys(bible.books).find(
     book => normalizeBookName(book) === normalizedInput
@@ -133,11 +133,11 @@ function searchRange(bible, query) {
   } else {
     // Multiple chapters
     for (let ch = chapter; ch <= endChapter; ch++) {
-      const chapterVerses = book[ch];
-      if (!chapterVerses) continue;
+      const chapterVerses = book[ch]
+      if (!chapterVerses) continue
 
-      const start = ch === chapter ? startVerse : 1;
-      const end = ch === endChapter ? endVerse : chapterVerses.length;
+      const start = ch === chapter ? startVerse : 1
+      const end = ch === endChapter ? endVerse : chapterVerses.length
 
       for (let v = start; v <= end; v++) {
         if (chapterVerses[v - 1]) {
@@ -145,7 +145,7 @@ function searchRange(bible, query) {
             chapter: ch,
             verse: v,
             text: chapterVerses[v - 1]
-          });
+          })
         }
       }
     }
@@ -155,7 +155,7 @@ function searchRange(bible, query) {
     return {
       success: false,
       error: `No verses found in range ${bookName} ${chapter}:${startVerse}-${endVerse}`
-    };
+    }
   }
 
   return {
@@ -174,20 +174,18 @@ function search(bible, query) {
     return rangeResult;
   }
 
-  // Fall back to single verse search
   return searchVerse(bible, query);
 }
 
-// Display results nicely
 function displayResult(result) {
   if (!result.success) {
-    console.log(`❌ ${result.error}`);
+    console.log(`Error: ${result.error}`);
     return;
   }
 
   if (result.verses) {
     // Range result
-    console.log(`\n📖 ${result.range}\n`);
+    console.log(`\n ${result.range}\n`);
     result.verses.forEach(v => {
       const chapter = v.chapter || result.verses[0].chapter || 1;
       const text = v.text.replace(/\/n/g, '\n');
@@ -196,7 +194,7 @@ function displayResult(result) {
   } else {
     // Single verse result
     const text = result.text.replace(/\/n/g, '\n');
-    console.log(`\n📖 ${result.reference}\n${text}\n`);
+    console.log(`\n ${result.reference}\n${text}\n`);
   }
 }
 
